@@ -9,24 +9,19 @@ from createCirclePlot import *
 # setup
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-# get the coordinates for a circle
-radiusCircle = float(1)
-x1 = np.linspace(1, -1, 100)
-x2 = np.linspace(-1, 1, 100)
-y1 = np.sqrt(np.power(radiusCircle,2)-np.power(x1,2))
-y2 = -np.sqrt(np.power(radiusCircle,2)-np.power(x2,2))
-xLocsCircle = np.concatenate((x1,x2))
-yLocsCircle = np.concatenate((y1,y2))
-
 # setup the figure and axis
 fig = plt.figure()
 ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
 ax.set_aspect('equal', 'box')
 
 # setup the plot elements we want to animate
-circle, = ax.plot(xLocsCircle, yLocsCircle, linewidth=0.5, color=cmap[0])
-circle2 = createCirclePlot(ax, 0, 0, 0.5, linewidth=0.5, color=cmap[1])
-circle3 = createCirclePlot(ax, 0, 0, 0.3, linewidth=0.5, color=cmap[2])
+xyCentersCircle = [[0.0,0.0], [1.0,0.0], [1.5,0.0]]
+circles = []
+circles.extend(createCirclePlot(ax, 0.0, 0.0, 1.0, linewidth=0.5, color=cmap[0]))
+circles.extend(createCirclePlot(ax, 1.0, 0.0, 0.5, linewidth=0.5, color=cmap[1]))
+circles.extend(createCirclePlot(ax, 1.5, 0.0, 0.3, linewidth=0.5, color=cmap[2]))
+
+circle, = ax.plot([], [], linewidth=2, color=cmap[0])
 line, = ax.plot([], [], linewidth=2, color=cmap[0])
 outline, = ax.plot([], [], linewidth=2, color=[0,0,0])
 
@@ -35,7 +30,8 @@ numFrames = 200
 # initialization function: plot the background of each frame
 def init():
     line.set_data([], [])
-    return line,
+    circle.set_data([], [])
+    return line, circle,
 
 # animation function. this is called sequentially
 def animate(iteration):
@@ -47,6 +43,10 @@ def animate(iteration):
     xLine = np.array([0, xPos])
     yLine = np.array([0, yPos])
     line.set_data(xLine, yLine)
+    # circle drawing
+    # circle.set_data(np.linspace(0,float(iteration)/numFrames,10), np.linspace(0,float(iteration)/numFrames,10))
+    # circle.set_data(circles[1].get_xdata()+float(iteration)/numFrames, circles[1].get_ydata())
+    circle.set_data(circles[1].get_xdata()+(xPos-xyCentersCircle[1][0]), circles[1].get_ydata()+(yPos-xyCentersCircle[1][1]))
     # outline drawing
     if iteration == 0:
         # need to handle empty array from get_xdata()
@@ -68,7 +68,7 @@ def animate(iteration):
         xOutline = np.concatenate((xOutline1,xOutline2))
         yOutline = np.concatenate((yOutline1,yOutline2))
     outline.set_data(xOutline, yOutline)
-    return line, outline,
+    return line, outline, circle
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(fig, animate, init_func=init,
