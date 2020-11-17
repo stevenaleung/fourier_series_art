@@ -9,9 +9,11 @@ from createCirclePlot import *
 
 
 ## setup
-numFrames = 200
+numFramesTotal = 100
+numFramesSingleCycle = 200
 numCircles = 3
 radiiCircle = np.array([1.0, 0.5, 0.3])
+rotationSpeed = np.array([1.0, 0.5, 0.3])
 
 # get the default colormap
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -37,7 +39,7 @@ for ind in np.arange(numCircles):
 
 # setup the line coordinates
 
-# pdb.set_trace()
+pdb.set_trace()
 
 
 
@@ -56,63 +58,53 @@ def init():
 
 # animate function. this is called sequentially
 def animate(iteration):
-    # radiusCircle = float(1)
-    angle_rad = float(iteration)/numFrames*2*np.pi
-    # xPos = np.cos(angle_rad)/radiusCircle
-    # yPos = np.sin(angle_rad)/radiusCircle
+    angle_rad = float(iteration)/numFramesTotal*2*np.pi*rotationSpeed
     xPositionsLine = np.cos(angle_rad)*radiiCircle
     yPositionsLine = np.sin(angle_rad)*radiiCircle
     xPositionsLineCumsum = np.cumsum(xPositionsLine)
     yPositionsLineCumsum = np.cumsum(yPositionsLine)
     xTmp = np.insert(xPositionsLineCumsum, 0, 0);
     yTmp = np.insert(yPositionsLineCumsum, 0, 0);
+
     # line drawing
     for ind in np.arange(numCircles):
         xLine = xTmp[ind:ind+2]
         yLine = yTmp[ind:ind+2]
         lines[ind].set_data(xLine, yLine)
 
-    xPos = xPositionsLine[0]
-    yPos = yPositionsLine[0]
     # circle drawing
     for ind in np.arange(1,numCircles):
         xCoordsCircle = xyCoordsCircle[ind][0]+(xPositionsLineCumsum[ind-1]-xyCentersCircle[ind][0])
         yCoordsCircle = xyCoordsCircle[ind][1]+(yPositionsLineCumsum[ind-1]-xyCentersCircle[ind][1])
         circles[ind].set_data(xCoordsCircle, yCoordsCircle)
-    # # circle.set_data(np.linspace(0,float(iteration)/numFrames,10), np.linspace(0,float(iteration)/numFrames,10))
-    # # circle.set_data(circles[1].get_xdata()+float(iteration)/numFrames, circles[1].get_ydata())
-    # # circle.set_data(circles[1].get_xdata()+(xPos-xyCentersCircle[1][0]), circles[1].get_ydata()+(yPos-xyCentersCircle[1][1]))
-    # circles[1].set_data(xyCoordsCircle[1][0]+(xPos-xyCentersCircle[1][0]), xyCoordsCircle[1][1]+(yPos-xyCentersCircle[1][1]))
-    # # circles[1].set_data(np.linspace(0,float(iteration)/numFrames,10), np.linspace(0,float(iteration)/numFrames,10))
-    # # circles[2].set_data(circles[1].get_xdata()+float(iteration)/numFrames, circles[1].get_ydata())
 
     # outline drawing
     if iteration == 0:
         # need to handle empty array from get_xdata()
-        xOutline = np.array(xPos)
-        yOutline = np.array(yPos)
+        xOutline = np.array(xPositionsLineCumsum[-1])
+        yOutline = np.array(yPositionsLineCumsum[-1])
     elif iteration == 1:
         # need to handle scalar value from get_xdata()
         xOutline1 = np.array([outline[0].get_xdata()])
-        xOutline2 = np.array([xPos])
+        xOutline2 = np.array([xPositionsLineCumsum[-1]])
         yOutline1 = np.array([outline[0].get_ydata()])
-        yOutline2 = np.array([yPos])
+        yOutline2 = np.array([yPositionsLineCumsum[-1]])
         xOutline = np.concatenate((xOutline1,xOutline2))
         yOutline = np.concatenate((yOutline1,yOutline2))
     else:
         xOutline1 = np.array(outline[0].get_xdata())
-        xOutline2 = np.array([xPos])
+        xOutline2 = np.array([xPositionsLineCumsum[-1]])
         yOutline1 = np.array(outline[0].get_ydata())
-        yOutline2 = np.array([yPos])
+        yOutline2 = np.array([yPositionsLineCumsum[-1]])
         xOutline = np.concatenate((xOutline1,xOutline2))
         yOutline = np.concatenate((yOutline1,yOutline2))
     outline[0].set_data(xOutline, yOutline)
-    # pdb.set_trace()
+
     return artists
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=numFrames, interval=20, blit=True)
+                               frames=numFramesTotal, interval=20, blit=True)
 
 # save the animation as an mp4.  This requires ffmpeg or mencoder to be
 # installed.  The extra_args ensure that the x264 codec is used, so that
