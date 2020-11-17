@@ -4,6 +4,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
+from createCirclePlot import *
+
 # setup
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
@@ -16,11 +18,15 @@ y2 = -np.sqrt(np.power(radiusCircle,2)-np.power(x2,2))
 xLocsCircle = np.concatenate((x1,x2))
 yLocsCircle = np.concatenate((y1,y2))
 
-# First set up the figure, the axis, and the plot element we want to animate
+# setup the figure and axis
 fig = plt.figure()
 ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
 ax.set_aspect('equal', 'box')
+
+# setup the plot elements we want to animate
 circle, = ax.plot(xLocsCircle, yLocsCircle, linewidth=0.5, color=cmap[0])
+circle2 = createCirclePlot(ax, 0, 0, 0.5, linewidth=0.5, color=cmap[1])
+circle3 = createCirclePlot(ax, 0, 0, 0.3, linewidth=0.5, color=cmap[2])
 line, = ax.plot([], [], linewidth=2, color=cmap[0])
 outline, = ax.plot([], [], linewidth=2, color=[0,0,0])
 
@@ -31,7 +37,7 @@ def init():
     line.set_data([], [])
     return line,
 
-# animation function.  This is called sequentially
+# animation function. this is called sequentially
 def animate(iteration):
     radiusCircle = float(1)
     angle_rad = float(iteration)/numFrames*2*np.pi
