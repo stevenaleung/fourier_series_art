@@ -9,11 +9,11 @@ from createCirclePlot import *
 
 
 ## setup
-numFramesTotal = 100
-numFramesSingleCycle = 200
+numFramesTotal = 2000
+numFramesSingleCycle = 100
 numCircles = 3
 radiiCircle = np.array([1.0, 0.5, 0.3])
-rotationSpeed = np.array([1.0, 0.5, 0.3])
+rotationSpeed = np.array([0.6, 2.1, 4.1])
 
 # get the default colormap
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -32,15 +32,9 @@ artists = lines + circles + outline
 # setup the circle coordinates
 xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:2], 0, 0.0)
 xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), np.zeros((numCircles,1))))
-
 xyCoordsCircle = np.empty([numCircles,2,200])
 for ind in np.arange(numCircles):
     xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = createCircle(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
-
-# setup the line coordinates
-
-pdb.set_trace()
-
 
 
 ## animation
@@ -58,7 +52,7 @@ def init():
 
 # animate function. this is called sequentially
 def animate(iteration):
-    angle_rad = float(iteration)/numFramesTotal*2*np.pi*rotationSpeed
+    angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeed
     xPositionsLine = np.cos(angle_rad)*radiiCircle
     yPositionsLine = np.sin(angle_rad)*radiiCircle
     xPositionsLineCumsum = np.cumsum(xPositionsLine)
