@@ -2,11 +2,22 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
+
+# get the coordinates for a circle
+radiusCircle = float(1)
+x1 = np.linspace(1, -1, 100)
+x2 = np.linspace(-1, 1, 100)
+y1 = np.sqrt(np.power(radiusCircle,2)-np.power(x1,2))
+y2 = -np.sqrt(np.power(radiusCircle,2)-np.power(x2,2))
+xLocsCircle = np.concatenate((x1,x2))
+yLocsCircle = np.concatenate((y1,y2))
+
 # First set up the figure, the axis, and the plot element we want to animate
 fig = plt.figure()
 ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
 ax.set_aspect('equal', 'box')
-line, = ax.plot([], [], lw=2)
+circle, = ax.plot(xLocsCircle, yLocsCircle, linewidth=0.5, color=[0,0,0])
+line, = ax.plot([], [], linewidth=2)
 
 numFrames = 200
 
@@ -19,31 +30,10 @@ def init():
 def animate(i):
     r = float(1)
     angle = float(i)/numFrames*2*np.pi
-    x = np.cos(angle)/r
-    y = np.sin(angle)/r
-    if i < numFrames/2:
-        x1 = np.linspace(1, x, 100)
-        x = x1
-        y = np.sqrt(np.power(r,2)-np.power(x,2))
-    else:
-        x1 = np.linspace(1, -1, 100)
-        x2 = np.linspace(-1, x, 100)
-        y1 = np.sqrt(np.power(r,2)-np.power(x1,2))
-        y2 = -np.sqrt(np.power(r,2)-np.power(x2,2))
-        x = np.concatenate((x1,x2))
-        y = np.concatenate((y1,y2))
-    # r = 1
-    # if i<numFrames/2:
-    #     x1 = np.linspace(1, 1-4*float(i)/numFrames, 100)
-    #     x = x1
-    #     y = np.sqrt(np.power(r,2)-np.power(x,2))
-    # else:
-    #     x1 = np.linspace(1, -1, 100)
-    #     x2 = np.linspace(-1, -1+4*float(i-numFrames/2)/numFrames, 100)
-    #     y1 = np.sqrt(np.power(r,2)-np.power(x1,2))
-    #     y2 = -np.sqrt(np.power(r,2)-np.power(x2,2))
-    #     x = np.concatenate((x1,x2))
-    #     y = np.concatenate((y1,y2))
+    xPos = np.cos(angle)/r
+    yPos = np.sin(angle)/r
+    x = np.array([0, xPos])
+    y = np.array([0, yPos])
     line.set_data(x, y)
     return line,
 
@@ -57,6 +47,6 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 # your system: for more information, see
 # http://matplotlib.sourceforge.net/api/animation_api.html
 
-anim.save('circle_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+# anim.save('circle_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
 
 plt.show()
