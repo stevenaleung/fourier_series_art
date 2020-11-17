@@ -1,3 +1,5 @@
+import pdb
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
@@ -30,9 +32,9 @@ def init():
     return line,
 
 # animation function.  This is called sequentially
-def animate(i):
+def animate(iteration):
     radiusCircle = float(1)
-    angle_rad = float(i)/numFrames*2*np.pi
+    angle_rad = float(iteration)/numFrames*2*np.pi
     xPos = np.cos(angle_rad)/radiusCircle
     yPos = np.sin(angle_rad)/radiusCircle
     # line drawing
@@ -40,14 +42,23 @@ def animate(i):
     yLine = np.array([0, yPos])
     line.set_data(xLine, yLine)
     # outline drawing
-    if i < numFrames/2:
-        xOutline = np.linspace(1, xPos, 100)
-        yOutline = np.sqrt(np.power(radiusCircle,2)-np.power(xOutline,2))
+    if iteration == 0:
+        # need to handle empty array from get_xdata()
+        xOutline = np.array(xPos)
+        yOutline = np.array(yPos)
+    elif iteration == 1:
+        # need to handle scalar value from get_xdata()
+        xOutline1 = np.array([outline.get_xdata()])
+        xOutline2 = np.array([xPos])
+        yOutline1 = np.array([outline.get_ydata()])
+        yOutline2 = np.array([yPos])
+        xOutline = np.concatenate((xOutline1,xOutline2))
+        yOutline = np.concatenate((yOutline1,yOutline2))
     else:
-        xOutline1 = np.linspace(1, -1, 100)
-        xOutline2 = np.linspace(-1, xPos, 100)
-        yOutline1 = np.sqrt(np.power(radiusCircle,2)-np.power(xOutline1,2))
-        yOutline2 = -np.sqrt(np.power(radiusCircle,2)-np.power(xOutline2,2))
+        xOutline1 = np.array(outline.get_xdata())
+        xOutline2 = np.array([xPos])
+        yOutline1 = np.array(outline.get_ydata())
+        yOutline2 = np.array([yPos])
         xOutline = np.concatenate((xOutline1,xOutline2))
         yOutline = np.concatenate((yOutline1,yOutline2))
     outline.set_data(xOutline, yOutline)
