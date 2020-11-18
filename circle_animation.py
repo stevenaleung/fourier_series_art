@@ -8,19 +8,49 @@ from matplotlib import animation
 from createCirclePlot import *
 
 
+import csv
+
+with open('fourierComponents2.csv', newline='') as csvfile:
+    csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
+    headers = csvfileReader.__next__()
+    data = []
+    for row in csvfileReader:
+        data.append(row)
+data = np.asarray(data)
+numCircles = 10
+# rotationSpeeds = data[1:numCircles+1,0]*1000
+# radiiCircle = data[1:numCircles+1,1]/70
+# phases = data[1:numCircles+1,2]
+rotationSpeeds = data[:numCircles,0]*1000
+radiiCircle = data[:numCircles,1]/70
+phases = data[:numCircles,2]
+
+
 ## setup
 numFramesTotal = 2000
 numFramesSingleCycle = 100
-numCircles = 3
-radiiCircle = np.array([1.0, 0.5, 0.3])
-rotationSpeed = np.array([0.6, 2.1, 4.1])
+numCircles = 10
+np.random.seed(94305)
+# # # radiiCircle = np.sort(np.random.rand(numCircles)*0.5)[::-1]
+# # # rotationSpeeds = np.sort(np.random.rand(numCircles))
+# # radiiCircle = np.array([356.13125198,  78.31835378,  30.84879318,  20.99292418, 17.60222215,  16.34525484,  16.09254732,  15.05001482, 11.7131337 ,  10.57782973])
+# # radiiCircle = radiiCircle/100
+# # rotationSpeeds = np.array([ 0.        ,  0.00044484, -0.00088968, -0.00133452,  0.00133452, -0.00044484, -0.00177936,  0.00088968, -0.0022242 ,  0.00177936])
+# # rotationSpeeds = rotationSpeeds*1000
+# rotationSpeeds = np.array([ 0.00000000e+00, -9.08677874e-05, -3.63471149e-04,  9.08677874e-05,
+#         1.81735575e-04,  2.72603362e-04, -2.72603362e-04,  5.45206724e-04,
+#        -1.81735575e-04,  3.63471149e-04])*1000
+# radiiCircle = np.array([366.16072071,  75.09359933,  70.91904466,  67.1571062 ,
+#         57.52167601,  49.13138792,  27.82769199,  27.53797902,
+#         26.7499727 ,  26.08882441])/100
 
 # get the default colormap
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 # setup the figure and axis
 fig = plt.figure()
-ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
+# ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
+ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 ax.set_aspect('equal', 'box')
 
 # setup the plot elements we want to animate
@@ -30,7 +60,7 @@ outline = ax.plot([], [], linewidth=2, color=[0,0,0])
 artists = lines + circles + outline
 
 # setup the circle coordinates
-xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:2], 0, 0.0)
+xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:numCircles-1], 0, 0.0)
 xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), np.zeros((numCircles,1))))
 xyCoordsCircle = np.empty([numCircles,2,200])
 for ind in np.arange(numCircles):
@@ -52,7 +82,7 @@ def init():
 
 # animate function. this is called sequentially
 def animate(iteration):
-    angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeed
+    angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeeds+phases
     xPositionsLine = np.cos(angle_rad)*radiiCircle
     yPositionsLine = np.sin(angle_rad)*radiiCircle
     xPositionsLineCumsum = np.cumsum(xPositionsLine)
