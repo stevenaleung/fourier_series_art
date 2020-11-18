@@ -10,25 +10,22 @@ from createCirclePlot import *
 
 
 ## setup
-numFramesTotal = 485
+numFramesTotal = 500
 numFramesSingleCycle = 100
 numCirclesToDraw = 10
 
 # load fourier components
-with open('fourierComponents3.csv', newline='') as csvfile:
+with open('hummingbird_fourier_components.csv', newline='') as csvfile:
     csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
     headers = csvfileReader.__next__()
     data = []
     for row in csvfileReader:
         data.append(row)
 data = np.asarray(data)
-numCircles = 200
+numCircles = 1000
 rotationSpeeds = -data[1:numCircles+1,0]*1000
 radiiCircle = data[1:numCircles+1,1]/30
 phases = data[1:numCircles+1,2]
-# rotationSpeeds = -data[:numCircles,0]*1000
-# radiiCircle = data[:numCircles,1]/70
-# phases = data[:numCircles,2]
 
 # get the default colormap
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
