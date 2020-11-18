@@ -1,8 +1,8 @@
 import csv
 import numpy as np
 
-openFilename = 'testCoordinates2.csv'
-saveFilename = 'fourierComponents2.csv'
+openFilename = 'testCoordinates3.csv'
+saveFilename = 'fourierComponents3.csv'
 
 with open(openFilename, newline='') as csvfile:
     csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
