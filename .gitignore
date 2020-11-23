@@ -1,4 +1,7 @@
 __pycache__
 *.csv
-*.mp4
+
 *.svg
+*.mp4
+*.gif
+

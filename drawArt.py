@@ -141,5 +141,7 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 
 # movieSaveFilepath = coordinatesFilepath[:-4] + '.mp4'
 # anim.save(movieSaveFilepath, fps=30, dpi=300, extra_args=['-vcodec', 'libx264'])
+# movieSaveFilepath = coordinatesFilepath[:-4] + '.gif'
+# anim.save(movieSaveFilepath, fps=30, writer='imagemagick')
 
 plt.show()
