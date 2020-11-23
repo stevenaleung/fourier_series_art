@@ -11,8 +11,8 @@ from getCircleCoordinates import *
 
 
 ## setup
-numFramesTotal = 500
-numFramesSingleCycle = 100
+numFramesTotal = 250
+numFramesSingleCycle = 50
 numCircles = 1000                               # number of frequencies to use
 numCirclesToDraw = 50                           # number of frequencies to show in animation
 
@@ -45,6 +45,8 @@ cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
 ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 ax.set_aspect('equal', 'box')
+plt.xticks([])
+plt.yticks([])
 # plt.axis('off')
 
 # setup the plot elements we want to animate
@@ -137,6 +139,7 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 # your system: for more information, see
 # http://matplotlib.sourceforge.net/api/animation_api.html
 
-# anim.save('circle_animation.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+# movieSaveFilepath = coordinatesFilepath[:-4] + '.mp4'
+# anim.save(movieSaveFilepath, fps=30, dpi=300, extra_args=['-vcodec', 'libx264'])
 
 plt.show()
