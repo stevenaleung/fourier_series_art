@@ -5,6 +5,8 @@ import csv
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
+from getDrawingCoordinates import *
+from calculateFourierComponents import *
 from getCircleCoordinates import *
 
 
@@ -14,22 +16,28 @@ numFramesSingleCycle = 100
 numCircles = 1000                               # number of frequencies to use
 numCirclesToDraw = 50                           # number of frequencies to show in animation
 
+frequencyScaling = 1000
+amplitudeScaling = float(1/30)
 
-## load fourier components
-filename = sys.argv[1]
-fourierComponentsFilepath = filename + '_fourier_components.csv'
-with open(fourierComponentsFilepath, newline='') as csvfile:
-    csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
-    headers = csvfileReader.__next__()
-    data = []
-    for row in csvfileReader:
-        data.append(row)
-data = np.asarray(data)
+
+
+## calculate fourier components
+coordinatesFilepath = sys.argv[1]
+xCoordinates, yCoordinates = getDrawingCoordinates(coordinatesFilepath, stepSizeNew=1)
+frequenciesAll, amplitudesAll, phasesAll = calculateFourierComponents(xCoordinates, yCoordinates)
 
 # specify circle rotation speed, amplitude, and starting phase
-rotationSpeeds = -data[1:numCircles+1,0]*1000                   # negative sign used to account for coordinate axes difference btw inkscape and python
-radiiCircle = data[1:numCircles+1,1]/30
-phases = data[1:numCircles+1,2]
+rotationSpeeds = -frequenciesAll[1:numCircles+1]*frequencyScaling       # negative sign used to account for coordinate axes difference btw inkscape and python
+radiiCircle = amplitudesAll[1:numCircles+1]*amplitudeScaling
+phases = phasesAll[1:numCircles+1]
+
+# DC offset
+dcOffsetX = np.ptp(xCoordinates)
+dcOffsetY = np.ptp(yCoordinates)
+dcOffsetX *= amplitudeScaling
+dcOffsetY *= amplitudeScaling
+dcOffsetX = 0
+dcOffsetY = 0
 
 
 ## setup the figure and axis
@@ -37,6 +45,7 @@ cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
 ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 ax.set_aspect('equal', 'box')
+# plt.axis('off')
 
 # setup the plot elements we want to animate
 lines = [ax.plot([], [], linewidth=2)[0] for ind in range(numCirclesToDraw)]
@@ -46,7 +55,11 @@ artists = lines + circles + outline
 
 # setup the circle coordinates
 xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:numCirclesToDraw-1], 0, 0.0)
-xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), np.zeros((numCirclesToDraw,1))))
+yCentersCircle = np.zeros((numCirclesToDraw,1))
+xCentersCircle -= dcOffsetX
+yCentersCircle -= dcOffsetY    
+xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), yCentersCircle))
+
 xyCoordsCircle = np.empty([numCirclesToDraw,2,200])
 for ind in np.arange(numCirclesToDraw):
     xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = getCircleCoordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
@@ -68,14 +81,17 @@ def init():
 # animate function. this is called sequentially
 def animate(iteration):
     angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeeds-phases
-    xPositionsLine = np.cos(angle_rad)*radiiCircle
+    xPositionsLine = np.cos(angle_rad)*radiiCircle 
     yPositionsLine = np.sin(angle_rad)*radiiCircle
+    # add all the lines end to end to determine where they each should be
     xPositionsLineCumsum = np.cumsum(xPositionsLine)
     yPositionsLineCumsum = np.cumsum(yPositionsLine)
-    xTmp = np.insert(xPositionsLineCumsum, 0, 0);
-    yTmp = np.insert(yPositionsLineCumsum, 0, 0);
+    xPositionsLineCumsum -= dcOffsetX
+    yPositionsLineCumsum -= dcOffsetY
 
     # line drawing
+    xTmp = np.insert(xPositionsLineCumsum, 0, -dcOffsetX);
+    yTmp = np.insert(yPositionsLineCumsum, 0, -dcOffsetY);
     for ind in np.arange(numCirclesToDraw):
         xLine = xTmp[ind:ind+2]
         yLine = yTmp[ind:ind+2]
