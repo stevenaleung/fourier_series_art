@@ -5,14 +5,13 @@ import matplotlib.pyplot as plt
 
 
 ## setup
-coordinatesDir = 'source_material/'
 stepSizeNew = 1
 
 
 ## specify file names and paths
 coordinatesFilename = sys.argv[1]
-openFilepath = coordinatesDir + coordinatesFilename
-saveFilepath = coordinatesDir + coordinatesFilename[:-4] + '_fourier_components.csv'
+openFilepath = coordinatesFilename + '_coordinates.csv'
+saveFilepath = coordinatesFilename + '_fourier_components.csv'
 
 
 ## create x and y coordinate arrays

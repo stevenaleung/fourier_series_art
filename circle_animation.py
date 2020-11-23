@@ -1,44 +1,46 @@
-## imports
 import pdb
 
+import sys
+import csv
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
-import csv
-
-from createCirclePlot import *
+from getCircleCoordinates import *
 
 
 ## setup
 numFramesTotal = 500
 numFramesSingleCycle = 100
-numCirclesToDraw = 10
+numCircles = 1000                               # number of frequencies to use
+numCirclesToDraw = 50                           # number of frequencies to show in animation
 
-# load fourier components
-with open('hummingbird_fourier_components.csv', newline='') as csvfile:
+
+## load fourier components
+filename = sys.argv[1]
+fourierComponentsFilepath = filename + '_fourier_components.csv'
+with open(fourierComponentsFilepath, newline='') as csvfile:
     csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
     headers = csvfileReader.__next__()
     data = []
     for row in csvfileReader:
         data.append(row)
 data = np.asarray(data)
-numCircles = 1000
-rotationSpeeds = -data[1:numCircles+1,0]*1000
+
+# specify circle rotation speed, amplitude, and starting phase
+rotationSpeeds = -data[1:numCircles+1,0]*1000                   # negative sign used to account for coordinate axes difference btw inkscape and python
 radiiCircle = data[1:numCircles+1,1]/30
 phases = data[1:numCircles+1,2]
 
-# get the default colormap
-cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-# setup the figure and axis
+## setup the figure and axis
+cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
-# ax = plt.axes(xlim=(-2, 2), ylim=(-2, 2))
 ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 ax.set_aspect('equal', 'box')
 
 # setup the plot elements we want to animate
-lines = [ax.plot([], [], linewidth=2, color=cmap[ind])[0] for ind in range(numCirclesToDraw)]
-circles = [ax.plot([], [], linewidth=0.5, color=cmap[ind])[0] for ind in range(numCirclesToDraw)]
+lines = [ax.plot([], [], linewidth=2)[0] for ind in range(numCirclesToDraw)]
+circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(numCirclesToDraw)]
 outline = ax.plot([], [], linewidth=2, color=[0,0,0])
 artists = lines + circles + outline
 
@@ -47,7 +49,7 @@ xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:numCirclesToDraw-1], 0, 0.0)
 xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), np.zeros((numCirclesToDraw,1))))
 xyCoordsCircle = np.empty([numCirclesToDraw,2,200])
 for ind in np.arange(numCirclesToDraw):
-    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = createCircle(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
+    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = getCircleCoordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
 
 
 ## animation
