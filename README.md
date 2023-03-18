@@ -18,4 +18,4 @@ python3 drawArt.py coordinates/hummingbird.csv
 ```
 
 Output:\
-![Hummingbird drawn with Fourier series](https://github.com/stevenaleung/fourier_series_art/blob/main/output/hummingbird.gif)
+<img src="https://github.com/stevenaleung/fourier_series_art/blob/main/output/hummingbird.gif" />
