@@ -1,13 +1,9 @@
-import pdb
-
 import sys
 import csv
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
-from getDrawingCoordinates import *
-from calculateFourierComponents import *
-from getCircleCoordinates import *
+import utils
 
 
 ## setup
@@ -23,8 +19,8 @@ amplitudeScaling = float(1/30)
 
 ## calculate fourier components
 coordinatesFilepath = sys.argv[1]
-xCoordinates, yCoordinates = getDrawingCoordinates(coordinatesFilepath, stepSizeNew=1)
-frequenciesAll, amplitudesAll, phasesAll = calculateFourierComponents(xCoordinates, yCoordinates)
+xCoordinates, yCoordinates = utils.getDrawingCoordinates(coordinatesFilepath, stepSizeNew=1)
+frequenciesAll, amplitudesAll, phasesAll = utils.calculateFourierComponents(xCoordinates, yCoordinates)
 
 # specify circle rotation speed, amplitude, and starting phase
 rotationSpeeds = -frequenciesAll[1:numCircles+1]*frequencyScaling       # negative sign used to account for coordinate axes difference btw inkscape and python
@@ -64,7 +60,7 @@ xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), yCentersCir
 
 xyCoordsCircle = np.empty([numCirclesToDraw,2,200])
 for ind in np.arange(numCirclesToDraw):
-    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = getCircleCoordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
+    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = utils.getCircleCoordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
 
 
 ## animation
