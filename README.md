@@ -14,8 +14,8 @@ Line art drawn with Fourier series!
 
 ## Usage
 ```
-python3 drawArt.py source_material/hummingbird_coordinates.csv
+python3 drawArt.py coordinates/hummingbird.csv
 ```
 
 Output:\
-![Hummingbird drawn with Fourier series](https://github.com/stevenaleung/fourier_series_art/blob/develop/movies/hummingbird.gif)
+![Hummingbird drawn with Fourier series](https://github.com/stevenaleung/fourier_series_art/blob/develop/output/hummingbird.gif)
