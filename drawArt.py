@@ -13,7 +13,7 @@ drawing_half_extent = axes_half_extent * drawing_coverage_fraction
 step_size = 1
 
 num_freqs = 1000                    # number of frequencies to use
-num_freqs_to_draw = 50              # number of frequencies to show in animation
+num_freqs_to_draw = 100             # number of frequencies to show in animation
 frequency_scaling = 1000
 
 num_frames = 250
