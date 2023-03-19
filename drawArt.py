@@ -42,8 +42,8 @@ def main():
     plt.yticks([])
 
     # setup the plot elements we want to animate
-    lines = [ax.plot([], [], linewidth=2)[0] for ind in range(num_freqs_to_draw)]
-    circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(num_freqs_to_draw)]
+    lines = [ax.plot([], [], linewidth=2)[0] for _ in range(num_freqs_to_draw)]
+    circles = [ax.plot([], [], linewidth=0.5)[0] for _ in range(num_freqs_to_draw)]
     outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
     artists = lines + circles + [outline]
 
