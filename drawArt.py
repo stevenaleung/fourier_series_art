@@ -1,134 +1,102 @@
 import sys
-import csv
+import utils
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
-import utils
 
 
 ## setup
-numFramesTotal = 250
-numFramesSingleCycle = 50
-numCircles = 1000                               # number of frequencies to use
-numCirclesToDraw = 50                           # number of frequencies to show in animation
+axes_half_extent = 10
+drawing_coverage_fraction = 0.6
+drawing_half_extent = axes_half_extent * drawing_coverage_fraction
 
-frequencyScaling = 1000
-amplitudeScaling = float(1/30)
+num_frames = 250
+num_frames_per_cycle = 50
+num_freqs = 1000                    # number of frequencies to use
+num_circles_to_draw = 50            # number of frequencies to show in animation
 
+frequency_scaling = 1000
 step_size = 1
 
+# calculate fourier components
+coordinates_filepath = sys.argv[1]
+x_coords, y_coords = utils.get_drawing_coordinates(coordinates_filepath, step_size)
+x_coords_scaled, y_coords_scaled = utils.scale_coordinates(x_coords, y_coords, drawing_half_extent)
+frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
-## calculate fourier components
-coordinatesFilepath = sys.argv[1]
-xCoordinates, yCoordinates = utils.get_drawing_coordinates(coordinatesFilepath, step_size)
-frequenciesAll, amplitudesAll, phasesAll = utils.get_fourier_components(xCoordinates, yCoordinates)
+# specify circle rotation speed, radius, and starting phase
+rotation_speeds = frequencies[1:num_freqs+1] * frequency_scaling
+circle_radii = magnitudes[1:num_freqs+1]
+start_phases = phases[1:num_freqs+1]
 
-# specify circle rotation speed, amplitude, and starting phase
-rotationSpeeds = -frequenciesAll[1:numCircles+1]*frequencyScaling       # negative sign used to account for coordinate axes difference btw inkscape and python
-radiiCircle = amplitudesAll[1:numCircles+1]*amplitudeScaling
-phases = phasesAll[1:numCircles+1]
-
-# DC offset
-dcOffsetX = np.ptp(xCoordinates)
-dcOffsetY = np.ptp(yCoordinates)
-dcOffsetX *= amplitudeScaling
-dcOffsetY *= amplitudeScaling
-dcOffsetX = 0
-dcOffsetY = 0
-
-
-## setup the figure and axis
+# setup the figure and axis
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
-ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
+axes_limits = (-axes_half_extent, axes_half_extent)
+ax = plt.axes(xlim=axes_limits, ylim=axes_limits)
 ax.set_aspect('equal', 'box')
 plt.xticks([])
 plt.yticks([])
-# plt.axis('off')
 
 # setup the plot elements we want to animate
-lines = [ax.plot([], [], linewidth=2)[0] for ind in range(numCirclesToDraw)]
-circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(numCirclesToDraw)]
-outline = ax.plot([], [], linewidth=2, color=[0,0,0])
-artists = lines + circles + outline
-
-# setup the circle coordinates
-xCentersCircle = np.insert(np.cumsum(radiiCircle)[0:numCirclesToDraw-1], 0, 0.0)
-yCentersCircle = np.zeros((numCirclesToDraw,1))
-xCentersCircle -= dcOffsetX
-yCentersCircle -= dcOffsetY    
-xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), yCentersCircle))
-
-xyCoordsCircle = np.empty([numCirclesToDraw,2,200])
-for ind in np.arange(numCirclesToDraw):
-    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = utils.get_circle_coordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
+lines = [ax.plot([], [], linewidth=2)[0] for ind in range(num_circles_to_draw)]
+circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(num_circles_to_draw)]
+outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
+artists = lines + circles + [outline]
 
 
 ## animation
-# initialization function: plot the background of each frame
-def init():
-    # initialize lines
-    for line in lines:
-        line.set_data([], [])
-
-    # initialize circles
-    for ind in np.arange(numCirclesToDraw):
-        circles[ind].set_data(xyCoordsCircle[ind][0], xyCoordsCircle[ind][1])
-
+def initialize_artists():
+    for artist in artists:
+        artist.set_data([], [])
     return artists
 
-# animate function. this is called sequentially
-def animate(iteration):
-    angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeeds-phases
-    xPositionsLine = np.cos(angle_rad)*radiiCircle 
-    yPositionsLine = np.sin(angle_rad)*radiiCircle
-    # add all the lines end to end to determine where they each should be
-    xPositionsLineCumsum = np.cumsum(xPositionsLine)
-    yPositionsLineCumsum = np.cumsum(yPositionsLine)
-    xPositionsLineCumsum -= dcOffsetX
-    yPositionsLineCumsum -= dcOffsetY
 
-    # line drawing
-    xTmp = np.insert(xPositionsLineCumsum, 0, -dcOffsetX);
-    yTmp = np.insert(yPositionsLineCumsum, 0, -dcOffsetY);
-    for ind in np.arange(numCirclesToDraw):
-        xLine = xTmp[ind:ind+2]
-        yLine = yTmp[ind:ind+2]
-        lines[ind].set_data(xLine, yLine)
-
-    # circle drawing
-    for ind in np.arange(1,numCirclesToDraw):
-        xCoordsCircle = xyCoordsCircle[ind][0]+(xPositionsLineCumsum[ind-1]-xyCentersCircle[ind][0])
-        yCoordsCircle = xyCoordsCircle[ind][1]+(yPositionsLineCumsum[ind-1]-xyCentersCircle[ind][1])
-        circles[ind].set_data(xCoordsCircle, yCoordsCircle)
-
-    # outline drawing
-    if iteration == 0:
-        # need to handle empty array from get_xdata()
-        xOutline = np.array(xPositionsLineCumsum[-1])
-        yOutline = np.array(yPositionsLineCumsum[-1])
-    elif iteration == 1:
-        # need to handle scalar value from get_xdata()
-        xOutline1 = np.array([outline[0].get_xdata()])
-        xOutline2 = np.array([xPositionsLineCumsum[-1]])
-        yOutline1 = np.array([outline[0].get_ydata()])
-        yOutline2 = np.array([yPositionsLineCumsum[-1]])
-        xOutline = np.concatenate((xOutline1,xOutline2))
-        yOutline = np.concatenate((yOutline1,yOutline2))
-    else:
-        xOutline1 = np.array(outline[0].get_xdata())
-        xOutline2 = np.array([xPositionsLineCumsum[-1]])
-        yOutline1 = np.array(outline[0].get_ydata())
-        yOutline2 = np.array([yPositionsLineCumsum[-1]])
-        xOutline = np.concatenate((xOutline1,xOutline2))
-        yOutline = np.concatenate((yOutline1,yOutline2))
-    outline[0].set_data(xOutline, yOutline)
-
+def update_artists(frame_num):
+    current_phases_radian = float(frame_num)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
+    x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
+    update_lines(lines, x_centers_circle, y_centers_circle)
+    update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
+    update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
     return artists
 
-# call the animator.  blit=True means only re-draw the parts that have changed.
-anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=numFramesTotal, interval=20, blit=True)
+
+def get_circle_centers(radii, phases_radian):
+    x_line_endpoints = np.cos(phases_radian) * radii
+    y_line_endpoints = np.sin(phases_radian) * radii
+    # add the lines end to end to find the circle centers
+    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
+    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
+    return x_centers_circle, y_centers_circle
+
+
+def update_lines(lines, x_line_endpoints, y_line_endpoints):
+    for idx, line in enumerate(lines):
+        x_line = x_line_endpoints[idx:idx+2]
+        y_line = y_line_endpoints[idx:idx+2]
+        line.set_data(x_line, y_line)
+
+
+def update_circles(circles, circle_radii, x_centers_circle, y_centers_circle):
+    for idx, circle in enumerate(circles):
+        x_coords, y_coords = utils.get_circle_coordinates(x_centers_circle[idx], y_centers_circle[idx], circle_radii[idx])
+        circle.set_data(x_coords, y_coords)
+
+
+def update_outline(outline, x_pos, y_pos):
+    x_outline = np.concatenate((outline.get_xdata(), np.array(x_pos, ndmin=1)))
+    y_outline = np.concatenate((outline.get_ydata(), np.array(y_pos, ndmin=1)))
+    outline.set_data(x_outline, y_outline)
+
+
+anim = animation.FuncAnimation(
+    fig,
+    update_artists,
+    init_func=initialize_artists,
+    frames=num_frames,
+    interval=20,
+    blit=True,
+)
 
 # save the animation as an mp4.  This requires ffmpeg or mencoder to be
 # installed.  The extra_args ensure that the x264 codec is used, so that
@@ -136,9 +104,9 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 # your system: for more information, see
 # http://matplotlib.sourceforge.net/api/animation_api.html
 
-# movieSaveFilepath = coordinatesFilepath[:-4] + '.mp4'
+# movieSaveFilepath = coordinates_filepath[:-4] + '.mp4'
 # anim.save(movieSaveFilepath, fps=30, dpi=300, extra_args=['-vcodec', 'libx264'])
-# movieSaveFilepath = coordinatesFilepath[:-4] + '.gif'
+# movieSaveFilepath = coordinates_filepath[:-4] + '.gif'
 # anim.save(movieSaveFilepath, fps=30, writer='imagemagick')
 
 plt.show()

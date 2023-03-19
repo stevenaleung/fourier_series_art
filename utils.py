@@ -5,7 +5,8 @@ import numpy as np
 def get_drawing_coordinates(filepath, step_size):
     xy_coordinates = get_coordinates(filepath)
     x_coordinates, y_coordinates = resample_coordinates(xy_coordinates, step_size)
-    return x_coordinates, y_coordinates
+    # negative sign used to account for coordinate axes difference btw inkscape and python
+    return x_coordinates, -y_coordinates
 
 
 def get_coordinates(filepath):
@@ -31,6 +32,13 @@ def resample_coordinates(xy_coordinates, step_size):
     return x_coordinates, y_coordinates
 
 
+def scale_coordinates(x_coords, y_coords, target_half_extent):
+    coords_max_extent = np.maximum(np.ptp(x_coords), np.ptp(y_coords))
+    x_coords_scaled = x_coords / coords_max_extent * (target_half_extent * 2)
+    y_coords_scaled = y_coords / coords_max_extent * (target_half_extent * 2)
+    return x_coords_scaled, y_coords_scaled
+
+
 def get_fourier_components(x_coordinates, y_coordinates):
     ## calculate the fourier components
     # compute the fft for the coordinates
@@ -40,7 +48,7 @@ def get_fourier_components(x_coordinates, y_coordinates):
 
     # scale the coefficient magnitudes
     num_samples = complex_coordinates.shape[0]
-    magnitudes = np.abs(complex_coordinates_fft) / num_samples * 2
+    magnitudes = np.abs(complex_coordinates_fft) / num_samples
 
     # grab the phases
     phases = np.angle(complex_coordinates_fft)
