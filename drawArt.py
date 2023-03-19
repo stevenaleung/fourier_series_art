@@ -17,8 +17,7 @@ amplitude_scaling = float(1/30)
 
 step_size = 1
 
-
-## calculate fourier components
+# calculate fourier components
 coordinates_filepath = sys.argv[1]
 x_coordinates, y_coordinates = utils.get_drawing_coordinates(coordinates_filepath, step_size)
 frequencies_all, amplitudes_all, phases_all = utils.get_fourier_components(x_coordinates, y_coordinates)
@@ -28,23 +27,13 @@ rotation_speeds = -frequencies_all[1:num_circles+1]*frequency_scaling       # ne
 circle_radii = amplitudes_all[1:num_circles+1]*amplitude_scaling
 phases = phases_all[1:num_circles+1]
 
-# DC offset
-dc_offset_x = np.ptp(x_coordinates)
-dc_offset_y = np.ptp(y_coordinates)
-dc_offset_x *= amplitude_scaling
-dc_offset_y *= amplitude_scaling
-dc_offset_x = 0
-dc_offset_y = 0
-
-
-## setup the figure and axis
+# setup the figure and axis
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
 ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10))
 ax.set_aspect('equal', 'box')
 plt.xticks([])
 plt.yticks([])
-# plt.axis('off')
 
 # setup the plot elements we want to animate
 lines = [ax.plot([], [], linewidth=2)[0] for ind in range(num_circles_to_draw)]
@@ -54,38 +43,27 @@ artists = lines + circles + [outline]
 
 
 ## animation
-# initialization function: plot the background of each frame
 def initialize_artists():
     for artist in artists:
         artist.set_data([], [])
     return artists
 
 
-# animate function. this is called sequentially
 def update_artists(iteration):
     current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds - phases
     x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
-
-    # line drawing
     update_lines(lines, x_centers_circle, y_centers_circle)
-
-    # circle drawing
     update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
-
-    # outline drawing
     update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
-
     return artists
 
 
 def get_circle_centers(radii, phases_radian):
     x_line_endpoints = np.cos(phases_radian) * radii
     y_line_endpoints = np.sin(phases_radian) * radii
-
     # add the lines end to end to find the circle centers
     x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
     y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
-
     return x_centers_circle, y_centers_circle
 
 
@@ -108,7 +86,6 @@ def update_outline(outline, x_pos, y_pos):
     outline.set_data(x_outline, y_outline)
 
 
-# call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(
     fig,
     update_artists,
