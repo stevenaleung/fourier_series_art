@@ -53,8 +53,8 @@ def initialize_artists():
     return artists
 
 
-def update_artists(iteration):
-    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
+def update_artists(frame_num):
+    current_phases_radian = float(frame_num)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
     x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
     update_lines(lines, x_centers_circle, y_centers_circle)
     update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
