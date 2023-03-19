@@ -63,6 +63,44 @@ def get_fourier_components(x_coordinates, y_coordinates):
     return freqs_sorted, magnitudes_sorted, phases_sorted
 
 
+def initialize_artists(artists):
+    for artist in artists:
+        artist.set_data([], [])
+    return artists
+
+
+def update_artists(lines, circles, outline, rotation_speeds, start_phases, circle_radii, num_frames_per_cycle, frame_num):
+    current_phases_radian = float(frame_num)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
+    x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
+    update_lines(lines, x_centers_circle, y_centers_circle)
+    update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
+    update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
+    artists = lines + circles + [outline]
+    return artists
+
+
+def get_circle_centers(radii, phases_radian):
+    x_line_endpoints = np.cos(phases_radian) * radii
+    y_line_endpoints = np.sin(phases_radian) * radii
+    # add the lines end to end to find the circle centers
+    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
+    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
+    return x_centers_circle, y_centers_circle
+
+
+def update_lines(lines, x_line_endpoints, y_line_endpoints):
+    for idx, line in enumerate(lines):
+        x_line = x_line_endpoints[idx:idx+2]
+        y_line = y_line_endpoints[idx:idx+2]
+        line.set_data(x_line, y_line)
+
+
+def update_circles(circles, circle_radii, x_centers_circle, y_centers_circle):
+    for idx, circle in enumerate(circles):
+        x_coords, y_coords = get_circle_coordinates(x_centers_circle[idx], y_centers_circle[idx], circle_radii[idx])
+        circle.set_data(x_coords, y_coords)
+
+
 def get_circle_coordinates(x_center, y_center, radius):
     degrees_in_circle = 360
     angles_degree = np.linspace(0, degrees_in_circle, 200)
@@ -70,3 +108,9 @@ def get_circle_coordinates(x_center, y_center, radius):
     x_locs = radius * np.cos(angles_radian) + x_center
     y_locs = radius * np.sin(angles_radian) + y_center
     return x_locs, y_locs
+
+
+def update_outline(outline, x_pos, y_pos):
+    x_outline = np.concatenate((outline.get_xdata(), np.array(x_pos, ndmin=1)))
+    y_outline = np.concatenate((outline.get_ydata(), np.array(y_pos, ndmin=1)))
+    outline.set_data(x_outline, y_outline)
