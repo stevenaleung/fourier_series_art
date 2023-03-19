@@ -2,28 +2,27 @@ import csv
 import numpy as np
 
 
-def get_drawing_coordinates(filepath, stepSizeNew):
+def get_drawing_coordinates(filepath, step_size):
     ## create x and y coordinate arrays
     # read the coordinates file
     with open(filepath, newline='') as csvfile:
-        csvfileReader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
-        headers = csvfileReader.__next__()
-        xyCoordinates = []
-        for row in csvfileReader:
-            xyCoordinates.append(row)
-    xyCoordinates = np.asarray(xyCoordinates)
+        csv_reader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
+        headers = csv_reader.__next__()
+        xy_coordinates = []
+        for row in csv_reader:
+            xy_coordinates.append(row)
+    xy_coordinates = np.asarray(xy_coordinates)
 
     # determine distance from each point to the starting point
-    stepSizes = np.sum(np.power(np.diff(xyCoordinates, axis=0), 2), axis=1)
-    stepSizeMean = np.mean(stepSizes)
-    distances = np.insert(np.cumsum(stepSizes), 0, 0)
+    step_sizes = np.sum(np.power(np.diff(xy_coordinates, axis=0), 2), axis=1)
+    distances_orig = np.insert(np.cumsum(step_sizes), 0, 0)
 
     # interpolate the x and y coordinate arrays
-    distancesNew = np.arange(0, distances[-1], stepSizeNew)
-    xCoordinates = np.interp(distancesNew, distances, xyCoordinates[:,0])
-    yCoordinates = np.interp(distancesNew, distances, xyCoordinates[:,1])
+    distances_new = np.arange(0, distances_orig[-1], step_size)
+    x_coordinates = np.interp(distances_new, distances_orig, xy_coordinates[:,0])
+    y_coordinates = np.interp(distances_new, distances_orig, xy_coordinates[:,1])
 
-    return xCoordinates, yCoordinates
+    return x_coordinates, y_coordinates
 
 
 def get_fourier_components(xCoordinates, yCoordinates):

@@ -15,11 +15,12 @@ numCirclesToDraw = 50                           # number of frequencies to show 
 frequencyScaling = 1000
 amplitudeScaling = float(1/30)
 
+step_size = 1
 
 
 ## calculate fourier components
 coordinatesFilepath = sys.argv[1]
-xCoordinates, yCoordinates = utils.get_drawing_coordinates(coordinatesFilepath, stepSizeNew=1)
+xCoordinates, yCoordinates = utils.get_drawing_coordinates(coordinatesFilepath, step_size)
 frequenciesAll, amplitudesAll, phasesAll = utils.get_fourier_components(xCoordinates, yCoordinates)
 
 # specify circle rotation speed, amplitude, and starting phase
