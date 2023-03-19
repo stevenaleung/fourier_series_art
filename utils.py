@@ -3,8 +3,12 @@ import numpy as np
 
 
 def get_drawing_coordinates(filepath, step_size):
-    ## create x and y coordinate arrays
-    # read the coordinates file
+    xy_coordinates = get_coordinates(filepath)
+    x_coordinates, y_coordinates = resample_coordinates(xy_coordinates, step_size)
+    return x_coordinates, y_coordinates
+
+
+def get_coordinates(filepath):
     with open(filepath, newline='') as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
         headers = csv_reader.__next__()
@@ -12,7 +16,10 @@ def get_drawing_coordinates(filepath, step_size):
         for row in csv_reader:
             xy_coordinates.append(row)
     xy_coordinates = np.asarray(xy_coordinates)
+    return xy_coordinates
 
+
+def resample_coordinates(xy_coordinates, step_size):
     # determine distance from each point to the starting point
     step_sizes = np.sum(np.power(np.diff(xy_coordinates, axis=0), 2), axis=1)
     distances_orig = np.insert(np.cumsum(step_sizes), 0, 0)
@@ -21,7 +28,6 @@ def get_drawing_coordinates(filepath, step_size):
     distances_new = np.arange(0, distances_orig[-1], step_size)
     x_coordinates = np.interp(distances_new, distances_orig, xy_coordinates[:,0])
     y_coordinates = np.interp(distances_new, distances_orig, xy_coordinates[:,1])
-
     return x_coordinates, y_coordinates
 
 
