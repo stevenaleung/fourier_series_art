@@ -4,9 +4,8 @@ Line art drawn with Fourier series!
 ## Setup
 1. Clone the repo
 2. Install dependencies using pip
-3. [Optional] Install FFmpeg and ImageMagick (if you want to save the animations)
-4. Create a csv file that contains x, y coordinates for each point in the image
-	
+3. Create a csv file that contains x, y coordinates for each point in the image
+
 ### Create the coordinates csv file
 1. Import the image into Inkscape
 2. Use Extensions > Modify Path > Add Nodes to increase sampling rate along the path
@@ -14,7 +13,7 @@ Line art drawn with Fourier series!
 
 ## Usage
 ```
-python3 drawArt.py coordinates/hummingbird.csv
+python3 draw.py coordinates/hummingbird.csv
 ```
 
 Output:\
