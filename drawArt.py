@@ -3,6 +3,7 @@ import utils
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from functools import partial
+from os import path
 
 
 ## setup
@@ -57,16 +58,11 @@ def main():
         blit=True,
     )
 
-    # save the animation as an mp4.  This requires ffmpeg or mencoder to be
-    # installed.  The extra_args ensure that the x264 codec is used, so that
-    # the video can be embedded in html5.  You may need to adjust this for
-    # your system: for more information, see
-    # http://matplotlib.sourceforge.net/api/animation_api.html
-
-    # movieSaveFilepath = coordinates_filepath[:-4] + '.mp4'
-    # anim.save(movieSaveFilepath, fps=30, dpi=300, extra_args=['-vcodec', 'libx264'])
-    # movieSaveFilepath = coordinates_filepath[:-4] + '.gif'
-    # anim.save(movieSaveFilepath, fps=30, writer='imagemagick')
+    # coordinates_filename = path.basename(coordinates_filepath)
+    # save_path = "output"
+    # gif_save_name = coordinates_filename.split(".csv")[0] + ".gif"
+    # gif_save_path = path.join(save_path, gif_save_name)
+    # anim.save(gif_save_path, fps=30)
 
     plt.show()
 
