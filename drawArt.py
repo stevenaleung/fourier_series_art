@@ -24,12 +24,12 @@ x_coords, y_coords = utils.get_drawing_coordinates(coordinates_filepath, step_si
 coords_max_range = np.maximum(np.ptp(x_coords), np.ptp(y_coords))
 x_coords_scaled = x_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width)
 y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width)
-frequencies_all, amplitudes_all, phases_all = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
+frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
-# specify circle rotation speed, amplitude, and starting phase
-rotation_speeds = -frequencies_all[1:num_freqs+1]*frequency_scaling       # negative sign used to account for coordinate axes difference btw inkscape and python
-circle_radii = amplitudes_all[1:num_freqs+1]
-phases = phases_all[1:num_freqs+1]
+# specify circle rotation speed, radius, and starting phase
+rotation_speeds = -frequencies[1:num_freqs+1] * frequency_scaling       # negative sign used to account for coordinate axes difference btw inkscape and python
+circle_radii = magnitudes[1:num_freqs+1]
+start_phases = phases[1:num_freqs+1]
 
 # setup the figure and axis
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -55,7 +55,7 @@ def initialize_artists():
 
 
 def update_artists(iteration):
-    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds - phases
+    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds - start_phases
     x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
     update_lines(lines, x_centers_circle, y_centers_circle)
     update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
