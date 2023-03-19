@@ -93,21 +93,28 @@ def update_artists(iteration):
     # line drawing
     x_tmp = np.insert(x_positions_line_cumsum, 0, -dc_offset_x);
     y_tmp = np.insert(y_positions_line_cumsum, 0, -dc_offset_y);
-    for ind in np.arange(num_circles_to_draw):
-        x_line = x_tmp[ind:ind+2]
-        y_line = y_tmp[ind:ind+2]
-        lines[ind].set_data(x_line, y_line)
+    update_lines(lines, x_tmp, y_tmp)
 
     # circle drawing
-    for ind in np.arange(1,num_circles_to_draw):
-        x_coords_circle = xy_coords_circle[ind][0]+(x_positions_line_cumsum[ind-1]-xy_centers_circle[ind][0])
-        y_coords_circle = xy_coords_circle[ind][1]+(y_positions_line_cumsum[ind-1]-xy_centers_circle[ind][1])
-        circles[ind].set_data(x_coords_circle, y_coords_circle)
+    update_circles(circles, circle_radii, x_tmp, y_tmp)
 
     # outline drawing
     update_outline(outline, x_positions_line_cumsum[-1], y_positions_line_cumsum[-1])
 
     return artists
+
+
+def update_lines(lines, x_line_endpoints, y_line_endpoints):
+    for idx, line in enumerate(lines):
+        x_line = x_line_endpoints[idx:idx+2]
+        y_line = y_line_endpoints[idx:idx+2]
+        line.set_data(x_line, y_line)
+
+
+def update_circles(circles, circle_radii, x_centers_circle, y_centers_circle):
+    for idx, circle in enumerate(circles):
+        x_coords, y_coords = utils.get_circle_coordinates(x_centers_circle[idx], y_centers_circle[idx], circle_radii[idx])
+        circle.set_data(x_coords, y_coords)
 
 
 def update_outline(outline, x_pos, y_pos):
