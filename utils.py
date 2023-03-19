@@ -70,3 +70,9 @@ def get_circle_coordinates(x_center, y_center, radius):
     x_locs = radius * np.cos(angles_radian) + x_center
     y_locs = radius * np.sin(angles_radian) + y_center
     return x_locs, y_locs
+
+
+def initialize_artists(artists):
+    for artist in artists:
+        artist.set_data([], [])
+    return artists

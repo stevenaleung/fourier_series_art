@@ -3,6 +3,7 @@ import utils
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
+from functools import partial
 
 
 ## setup
@@ -46,12 +47,6 @@ artists = lines + circles + [outline]
 
 
 ## animation
-def initialize_artists():
-    for artist in artists:
-        artist.set_data([], [])
-    return artists
-
-
 def update_artists(frame_num):
     current_phases_radian = float(frame_num)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
     x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
@@ -92,7 +87,7 @@ def update_outline(outline, x_pos, y_pos):
 anim = animation.FuncAnimation(
     fig,
     update_artists,
-    init_func=initialize_artists,
+    init_func=partial(utils.initialize_artists, artists),
     frames=num_frames,
     interval=20,
     blit=True,
