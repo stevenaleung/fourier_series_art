@@ -14,7 +14,7 @@ Line art drawn with Fourier series!
 
 ## Usage
 ```
-python3 drawArt.py coordinates/hummingbird.csv
+python3 draw.py coordinates/hummingbird.csv
 ```
 
 Output:\
