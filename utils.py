@@ -41,7 +41,7 @@ def get_fourier_components(x_coordinates, y_coordinates):
 
     # scale the coefficient magnitudes
     num_samples = complex_coordinates.shape[0]
-    magnitudes = np.abs(complex_coordinates_fft) / num_samples * 2
+    magnitudes = np.abs(complex_coordinates_fft) / num_samples
 
     # grab the phases
     phases = np.angle(complex_coordinates_fft)

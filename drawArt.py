@@ -22,8 +22,8 @@ step_size = 1
 coordinates_filepath = sys.argv[1]
 x_coords, y_coords = utils.get_drawing_coordinates(coordinates_filepath, step_size)
 coords_max_range = np.maximum(np.ptp(x_coords), np.ptp(y_coords))
-x_coords_scaled = x_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width)
-y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width)
+x_coords_scaled = x_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width * 2)
+y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width * 2)
 frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
 # specify circle rotation speed, radius, and starting phase
