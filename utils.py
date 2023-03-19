@@ -34,25 +34,25 @@ def resample_coordinates(xy_coordinates, step_size):
 def get_fourier_components(x_coordinates, y_coordinates):
     ## calculate the fourier components
     # compute the fft for the coordinates
-    tmp1 = x_coordinates + 1j*y_coordinates;
-    tmp2 = np.fft.fftshift(np.fft.fft(tmp1))
-    freqs = np.fft.fftshift(np.fft.fftfreq(tmp1.shape[-1]))
+    complex_coordinates = x_coordinates + 1j*y_coordinates;
+    complex_coordinates_fft = np.fft.fftshift(np.fft.fft(complex_coordinates))
+    freqs = np.fft.fftshift(np.fft.fftfreq(complex_coordinates.shape[-1]))
 
-    # scale the coefficient amplitudes
-    num_samples = tmp1.shape[0]
-    amplitudes = 2/num_samples * np.abs(tmp2)
+    # scale the coefficient magnitudes
+    num_samples = complex_coordinates.shape[0]
+    magnitudes = 2/num_samples * np.abs(complex_coordinates_fft)
 
     # grab the phases
-    phases = np.angle(tmp2)
+    phases = np.angle(complex_coordinates_fft)
 
-    # sort by largest amplitude
-    sort_order = np.argsort(amplitudes)[::-1]
+    # sort by largest magnitude
+    sort_order = np.argsort(magnitudes)[::-1]
     freqs_sorted = freqs[sort_order]
-    amplitudes_sorted = amplitudes[sort_order]
+    magnitudes_sorted = magnitudes[sort_order]
     phases_sorted = phases[sort_order]
 
     ## output results
-    return freqs_sorted, amplitudes_sorted, phases_sorted
+    return freqs_sorted, magnitudes_sorted, phases_sorted
 
 
 def get_circle_coordinates(xCenter, yCenter, radius):
