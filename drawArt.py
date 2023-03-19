@@ -12,7 +12,7 @@ drawing_coverage_fraction = 0.6
 
 num_frames = 250
 num_frames_per_cycle = 50
-num_circles = 1000                  # number of frequencies to use
+num_freqs = 1000                    # number of frequencies to use
 num_circles_to_draw = 50            # number of frequencies to show in animation
 
 frequency_scaling = 1000
@@ -27,9 +27,9 @@ y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axe
 frequencies_all, amplitudes_all, phases_all = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
 # specify circle rotation speed, amplitude, and starting phase
-rotation_speeds = -frequencies_all[1:num_circles+1]*frequency_scaling       # negative sign used to account for coordinate axes difference btw inkscape and python
-circle_radii = amplitudes_all[1:num_circles+1]
-phases = phases_all[1:num_circles+1]
+rotation_speeds = -frequencies_all[1:num_freqs+1]*frequency_scaling       # negative sign used to account for coordinate axes difference btw inkscape and python
+circle_radii = amplitudes_all[1:num_freqs+1]
+phases = phases_all[1:num_freqs+1]
 
 # setup the figure and axis
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
