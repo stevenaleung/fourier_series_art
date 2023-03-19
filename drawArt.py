@@ -10,13 +10,14 @@ axes_half_extent = 10
 drawing_coverage_fraction = 0.6
 drawing_half_extent = axes_half_extent * drawing_coverage_fraction
 
-num_frames = 250
-num_frames_per_cycle = 50
+step_size = 1
+
 num_freqs = 1000                    # number of frequencies to use
 num_circles_to_draw = 50            # number of frequencies to show in animation
-
 frequency_scaling = 1000
-step_size = 1
+
+num_frames = 250
+num_frames_per_cycle = 50
 
 
 def main():
