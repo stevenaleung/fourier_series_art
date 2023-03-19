@@ -49,8 +49,8 @@ plt.yticks([])
 # setup the plot elements we want to animate
 lines = [ax.plot([], [], linewidth=2)[0] for ind in range(num_circles_to_draw)]
 circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(num_circles_to_draw)]
-outline = ax.plot([], [], linewidth=2, color=[0,0,0])
-artists = lines + circles + outline
+outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
+artists = lines + circles + [outline]
 
 # setup the circle coordinates
 x_centers_circle = np.insert(np.cumsum(circle_radii)[0:num_circles_to_draw-1], 0, 0.0)
@@ -75,7 +75,7 @@ def initialize_artists():
     for ind in np.arange(num_circles_to_draw):
         circles[ind].set_data(xy_coords_circle[ind][0], xy_coords_circle[ind][1])
 
-    outline[0].set_data([], [])
+    outline.set_data([], [])
 
     return artists
 
@@ -105,13 +105,13 @@ def update_artists(iteration):
         circles[ind].set_data(x_coords_circle, y_coords_circle)
 
     # outline drawing
-    x_outline1 = np.array(outline[0].get_xdata())
+    x_outline1 = np.array(outline.get_xdata())
     x_outline2 = np.array([x_positions_line_cumsum[-1]])
-    y_outline1 = np.array(outline[0].get_ydata())
+    y_outline1 = np.array(outline.get_ydata())
     y_outline2 = np.array([y_positions_line_cumsum[-1]])
     x_outline = np.concatenate((x_outline1,x_outline2))
     y_outline = np.concatenate((y_outline1,y_outline2))
-    outline[0].set_data(x_outline, y_outline)
+    outline.set_data(x_outline, y_outline)
 
     return artists
 
