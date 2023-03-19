@@ -2,7 +2,7 @@ import csv
 import numpy as np
 
 
-def getDrawingCoordinates(filepath, stepSizeNew):
+def get_drawing_coordinates(filepath, stepSizeNew):
     ## create x and y coordinate arrays
     # read the coordinates file
     with open(filepath, newline='') as csvfile:
@@ -26,7 +26,7 @@ def getDrawingCoordinates(filepath, stepSizeNew):
     return xCoordinates, yCoordinates
 
 
-def calculateFourierComponents(xCoordinates, yCoordinates):
+def get_fourier_components(xCoordinates, yCoordinates):
     ## calculate the fourier components
     # compute the fft for the coordinates
     tmp1 = xCoordinates + 1j*yCoordinates;
@@ -50,7 +50,7 @@ def calculateFourierComponents(xCoordinates, yCoordinates):
     return freqsSorted, amplitudesSorted, phasesSorted
 
 
-def getCircleCoordinates(xCenter, yCenter, radius):
+def get_circle_coordinates(xCenter, yCenter, radius):
     radiusCircle = float(radius)
     x1 = np.linspace(radiusCircle, -radiusCircle, 100)
     x2 = np.linspace(-radiusCircle, radiusCircle, 100)
