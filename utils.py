@@ -34,13 +34,13 @@ def resample_coordinates(xy_coordinates, step_size):
 def get_fourier_components(x_coordinates, y_coordinates):
     ## calculate the fourier components
     # compute the fft for the coordinates
-    complex_coordinates = x_coordinates + 1j*y_coordinates;
+    complex_coordinates = x_coordinates + 1j*y_coordinates
     complex_coordinates_fft = np.fft.fftshift(np.fft.fft(complex_coordinates))
     freqs = np.fft.fftshift(np.fft.fftfreq(complex_coordinates.shape[-1]))
 
     # scale the coefficient magnitudes
     num_samples = complex_coordinates.shape[0]
-    magnitudes = 2/num_samples * np.abs(complex_coordinates_fft)
+    magnitudes = np.abs(complex_coordinates_fft) / num_samples * 2
 
     # grab the phases
     phases = np.angle(complex_coordinates_fft)
