@@ -52,32 +52,14 @@ circles = [ax.plot([], [], linewidth=0.5)[0] for ind in range(num_circles_to_dra
 outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
 artists = lines + circles + [outline]
 
-# setup the circle coordinates
-x_centers_circle = np.insert(np.cumsum(circle_radii)[0:num_circles_to_draw-1], 0, 0.0)
-y_centers_circle = np.zeros((num_circles_to_draw,1))
-x_centers_circle -= dc_offset_x
-y_centers_circle -= dc_offset_y    
-xy_centers_circle = np.hstack((np.expand_dims(x_centers_circle, axis=1), y_centers_circle))
-
-xy_coords_circle = np.empty([num_circles_to_draw,2,200])
-for ind in np.arange(num_circles_to_draw):
-    xy_coords_circle[ind,0,:], xy_coords_circle[ind,1,:] = utils.get_circle_coordinates(xy_centers_circle[ind][0], xy_centers_circle[ind][1],circle_radii[ind]);
-
 
 ## animation
 # initialization function: plot the background of each frame
 def initialize_artists():
-    # initialize lines
-    for line in lines:
-        line.set_data([], [])
-
-    # initialize circles
-    for ind in np.arange(num_circles_to_draw):
-        circles[ind].set_data(xy_coords_circle[ind][0], xy_coords_circle[ind][1])
-
-    outline.set_data([], [])
-
+    for artist in artists:
+        artist.set_data([], [])
     return artists
+
 
 # animate function. this is called sequentially
 def update_artists(iteration):
