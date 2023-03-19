@@ -105,15 +105,16 @@ def update_artists(iteration):
         circles[ind].set_data(x_coords_circle, y_coords_circle)
 
     # outline drawing
-    x_outline1 = np.array(outline.get_xdata())
-    x_outline2 = np.array([x_positions_line_cumsum[-1]])
-    y_outline1 = np.array(outline.get_ydata())
-    y_outline2 = np.array([y_positions_line_cumsum[-1]])
-    x_outline = np.concatenate((x_outline1,x_outline2))
-    y_outline = np.concatenate((y_outline1,y_outline2))
-    outline.set_data(x_outline, y_outline)
+    update_outline(outline, x_positions_line_cumsum[-1], y_positions_line_cumsum[-1])
 
     return artists
+
+
+def update_outline(outline, x_pos, y_pos):
+    x_outline = np.concatenate((outline.get_xdata(), np.array(x_pos, ndmin=1)))
+    y_outline = np.concatenate((outline.get_ydata(), np.array(y_pos, ndmin=1)))
+    outline.set_data(x_outline, y_outline)
+
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(
