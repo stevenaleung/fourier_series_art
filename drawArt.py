@@ -63,13 +63,8 @@ def initialize_artists():
 
 # animate function. this is called sequentially
 def update_artists(iteration):
-    angle_rad = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds-phases
-    x_line_endpoints = np.cos(angle_rad) * circle_radii
-    y_line_endpoints = np.sin(angle_rad) * circle_radii
-
-    # add the lines end to end to find the circle centers
-    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
-    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
+    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds - phases
+    x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
 
     # line drawing
     update_lines(lines, x_centers_circle, y_centers_circle)
@@ -81,6 +76,17 @@ def update_artists(iteration):
     update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
 
     return artists
+
+
+def get_circle_centers(radii, phases_radian):
+    x_line_endpoints = np.cos(phases_radian) * radii
+    y_line_endpoints = np.sin(phases_radian) * radii
+
+    # add the lines end to end to find the circle centers
+    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
+    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
+
+    return x_centers_circle, y_centers_circle
 
 
 def update_lines(lines, x_line_endpoints, y_line_endpoints):
