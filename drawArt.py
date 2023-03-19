@@ -64,24 +64,21 @@ def initialize_artists():
 # animate function. this is called sequentially
 def update_artists(iteration):
     angle_rad = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds-phases
-    x_positions_line = np.cos(angle_rad)*circle_radii 
-    y_positions_line = np.sin(angle_rad)*circle_radii
-    # add all the lines end to end to determine where they each should be
-    x_positions_line_cumsum = np.cumsum(x_positions_line)
-    y_positions_line_cumsum = np.cumsum(y_positions_line)
-    x_positions_line_cumsum -= dc_offset_x
-    y_positions_line_cumsum -= dc_offset_y
+    x_line_endpoints = np.cos(angle_rad) * circle_radii
+    y_line_endpoints = np.sin(angle_rad) * circle_radii
+
+    # add the lines end to end to find the circle centers
+    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
+    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
 
     # line drawing
-    x_tmp = np.insert(x_positions_line_cumsum, 0, -dc_offset_x);
-    y_tmp = np.insert(y_positions_line_cumsum, 0, -dc_offset_y);
-    update_lines(lines, x_tmp, y_tmp)
+    update_lines(lines, x_centers_circle, y_centers_circle)
 
     # circle drawing
-    update_circles(circles, circle_radii, x_tmp, y_tmp)
+    update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
 
     # outline drawing
-    update_outline(outline, x_positions_line_cumsum[-1], y_positions_line_cumsum[-1])
+    update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
 
     return artists
 
