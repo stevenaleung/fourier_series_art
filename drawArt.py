@@ -66,7 +66,7 @@ for ind in np.arange(numCirclesToDraw):
 
 ## animation
 # initialization function: plot the background of each frame
-def init():
+def initialize_artists():
     # initialize lines
     for line in lines:
         line.set_data([], [])
@@ -78,7 +78,7 @@ def init():
     return artists
 
 # animate function. this is called sequentially
-def animate(iteration):
+def update_artists(iteration):
     angle_rad = float(iteration)/numFramesSingleCycle*2*np.pi*rotationSpeeds-phases
     xPositionsLine = np.cos(angle_rad)*radiiCircle 
     yPositionsLine = np.sin(angle_rad)*radiiCircle
@@ -127,8 +127,14 @@ def animate(iteration):
     return artists
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
-anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=numFramesTotal, interval=20, blit=True)
+anim = animation.FuncAnimation(
+    fig,
+    update_artists,
+    init_func=initialize_artists,
+    frames=numFramesTotal,
+    interval=20,
+    blit=True,
+)
 
 # save the animation as an mp4.  This requires ffmpeg or mencoder to be
 # installed.  The extra_args ensure that the x264 codec is used, so that
