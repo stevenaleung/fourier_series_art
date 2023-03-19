@@ -75,6 +75,8 @@ def initialize_artists():
     for ind in np.arange(num_circles_to_draw):
         circles[ind].set_data(xy_coords_circle[ind][0], xy_coords_circle[ind][1])
 
+    outline[0].set_data([], [])
+
     return artists
 
 # animate function. this is called sequentially
@@ -103,25 +105,12 @@ def update_artists(iteration):
         circles[ind].set_data(x_coords_circle, y_coords_circle)
 
     # outline drawing
-    if iteration == 0:
-        # need to handle empty array from get_xdata()
-        x_outline = np.array(x_positions_line_cumsum[-1])
-        y_outline = np.array(y_positions_line_cumsum[-1])
-    elif iteration == 1:
-        # need to handle scalar value from get_xdata()
-        x_outline1 = np.array([outline[0].get_xdata()])
-        x_outline2 = np.array([x_positions_line_cumsum[-1]])
-        y_outline1 = np.array([outline[0].get_ydata()])
-        y_outline2 = np.array([y_positions_line_cumsum[-1]])
-        x_outline = np.concatenate((x_outline1,x_outline2))
-        y_outline = np.concatenate((y_outline1,y_outline2))
-    else:
-        x_outline1 = np.array(outline[0].get_xdata())
-        x_outline2 = np.array([x_positions_line_cumsum[-1]])
-        y_outline1 = np.array(outline[0].get_ydata())
-        y_outline2 = np.array([y_positions_line_cumsum[-1]])
-        x_outline = np.concatenate((x_outline1,x_outline2))
-        y_outline = np.concatenate((y_outline1,y_outline2))
+    x_outline1 = np.array(outline[0].get_xdata())
+    x_outline2 = np.array([x_positions_line_cumsum[-1]])
+    y_outline1 = np.array(outline[0].get_ydata())
+    y_outline2 = np.array([y_positions_line_cumsum[-1]])
+    x_outline = np.concatenate((x_outline1,x_outline2))
+    y_outline = np.concatenate((y_outline1,y_outline2))
     outline[0].set_data(x_outline, y_outline)
 
     return artists
