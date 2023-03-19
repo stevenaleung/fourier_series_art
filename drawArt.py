@@ -1,9 +1,8 @@
 import sys
-import csv
+import utils
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
-import utils
 
 
 ## setup
