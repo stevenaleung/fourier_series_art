@@ -15,12 +15,13 @@ numCirclesToDraw = 50                           # number of frequencies to show 
 frequencyScaling = 1000
 amplitudeScaling = float(1/30)
 
+step_size = 1
 
 
 ## calculate fourier components
 coordinatesFilepath = sys.argv[1]
-xCoordinates, yCoordinates = utils.getDrawingCoordinates(coordinatesFilepath, stepSizeNew=1)
-frequenciesAll, amplitudesAll, phasesAll = utils.calculateFourierComponents(xCoordinates, yCoordinates)
+xCoordinates, yCoordinates = utils.get_drawing_coordinates(coordinatesFilepath, step_size)
+frequenciesAll, amplitudesAll, phasesAll = utils.get_fourier_components(xCoordinates, yCoordinates)
 
 # specify circle rotation speed, amplitude, and starting phase
 rotationSpeeds = -frequenciesAll[1:numCircles+1]*frequencyScaling       # negative sign used to account for coordinate axes difference btw inkscape and python
@@ -60,7 +61,7 @@ xyCentersCircle = np.hstack((np.expand_dims(xCentersCircle, axis=1), yCentersCir
 
 xyCoordsCircle = np.empty([numCirclesToDraw,2,200])
 for ind in np.arange(numCirclesToDraw):
-    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = utils.getCircleCoordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
+    xyCoordsCircle[ind,0,:], xyCoordsCircle[ind,1,:] = utils.get_circle_coordinates(xyCentersCircle[ind][0], xyCentersCircle[ind][1],radiiCircle[ind]);
 
 
 ## animation
