@@ -7,8 +7,9 @@ import utils
 
 
 ## setup
-axes_half_width = 10
+axes_half_extent = 10
 drawing_coverage_fraction = 0.6
+drawing_half_extent = axes_half_extent * drawing_coverage_fraction
 
 num_frames = 250
 num_frames_per_cycle = 50
@@ -21,9 +22,7 @@ step_size = 1
 # calculate fourier components
 coordinates_filepath = sys.argv[1]
 x_coords, y_coords = utils.get_drawing_coordinates(coordinates_filepath, step_size)
-coords_max_range = np.maximum(np.ptp(x_coords), np.ptp(y_coords))
-x_coords_scaled = x_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width * 2)
-y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axes_half_width * 2)
+x_coords_scaled, y_coords_scaled = utils.scale_coordinates(x_coords, y_coords, drawing_half_extent)
 frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
 # specify circle rotation speed, radius, and starting phase
@@ -34,7 +33,7 @@ start_phases = phases[1:num_freqs+1]
 # setup the figure and axis
 cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
 fig = plt.figure()
-axes_limits = (-axes_half_width, axes_half_width)
+axes_limits = (-axes_half_extent, axes_half_extent)
 ax = plt.axes(xlim=axes_limits, ylim=axes_limits)
 ax.set_aspect('equal', 'box')
 plt.xticks([])

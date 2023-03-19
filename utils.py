@@ -32,6 +32,13 @@ def resample_coordinates(xy_coordinates, step_size):
     return x_coordinates, y_coordinates
 
 
+def scale_coordinates(x_coords, y_coords, target_half_extent):
+    coords_max_extent = np.maximum(np.ptp(x_coords), np.ptp(y_coords))
+    x_coords_scaled = x_coords / coords_max_extent * (target_half_extent * 2)
+    y_coords_scaled = y_coords / coords_max_extent * (target_half_extent * 2)
+    return x_coords_scaled, y_coords_scaled
+
+
 def get_fourier_components(x_coordinates, y_coordinates):
     ## calculate the fourier components
     # compute the fft for the coordinates
