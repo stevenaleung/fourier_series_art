@@ -27,7 +27,7 @@ y_coords_scaled = y_coords / coords_max_range * (drawing_coverage_fraction * axe
 frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
 # specify circle rotation speed, radius, and starting phase
-rotation_speeds = -frequencies[1:num_freqs+1] * frequency_scaling       # negative sign used to account for coordinate axes difference btw inkscape and python
+rotation_speeds = frequencies[1:num_freqs+1] * frequency_scaling
 circle_radii = magnitudes[1:num_freqs+1]
 start_phases = phases[1:num_freqs+1]
 
@@ -55,7 +55,7 @@ def initialize_artists():
 
 
 def update_artists(iteration):
-    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds - start_phases
+    current_phases_radian = float(iteration)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
     x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
     update_lines(lines, x_centers_circle, y_centers_circle)
     update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)

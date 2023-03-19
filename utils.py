@@ -5,7 +5,8 @@ import numpy as np
 def get_drawing_coordinates(filepath, step_size):
     xy_coordinates = get_coordinates(filepath)
     x_coordinates, y_coordinates = resample_coordinates(xy_coordinates, step_size)
-    return x_coordinates, y_coordinates
+    # negative sign used to account for coordinate axes difference btw inkscape and python
+    return x_coordinates, -y_coordinates
 
 
 def get_coordinates(filepath):
