@@ -55,12 +55,12 @@ def get_fourier_components(x_coordinates, y_coordinates):
     return freqs_sorted, magnitudes_sorted, phases_sorted
 
 
-def get_circle_coordinates(xCenter, yCenter, radius):
-    radiusCircle = float(radius)
-    x1 = np.linspace(radiusCircle, -radiusCircle, 100)
-    x2 = np.linspace(-radiusCircle, radiusCircle, 100)
-    y1 = np.sqrt(np.power(radiusCircle,2)-np.power(x1,2))
-    y2 = -np.sqrt(np.power(radiusCircle,2)-np.power(x2,2))
-    xLocsCircle = np.concatenate((x1,x2))+xCenter
-    yLocsCircle = np.concatenate((y1,y2))+yCenter
-    return xLocsCircle, yLocsCircle
+def get_circle_coordinates(x_center, y_center, radius):
+    radius_circle = float(radius)
+    x1 = np.linspace(radius_circle, -radius_circle, 100)
+    x2 = np.linspace(-radius_circle, radius_circle, 100)
+    y1 = np.sqrt(np.power(radius_circle,2)-np.power(x1,2))
+    y2 = -np.sqrt(np.power(radius_circle,2)-np.power(x2,2))
+    x_locs_circle = np.concatenate((x1,x2))+x_center
+    y_locs_circle = np.concatenate((y1,y2))+y_center
+    return x_locs_circle, y_locs_circle
