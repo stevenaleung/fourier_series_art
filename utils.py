@@ -69,14 +69,23 @@ def initialize_artists(artists):
     return artists
 
 
-def update_artists(lines, circles, outline, rotation_speeds, start_phases, circle_radii, num_frames_per_cycle, frame_num):
-    current_phases_radian = float(frame_num)/num_frames_per_cycle*2*np.pi*rotation_speeds + start_phases
-    x_centers_circle, y_centers_circle = get_circle_centers(circle_radii, current_phases_radian)
-    update_lines(lines, x_centers_circle, y_centers_circle)
-    update_circles(circles, circle_radii, x_centers_circle, y_centers_circle)
-    update_outline(outline, x_centers_circle[-1], y_centers_circle[-1])
-    artists = lines + circles + [outline]
-    return artists
+def update_artists(artists, outline, frame_num):
+    for (idx, artist) in enumerate(artists):
+        if idx == 0:
+            new_position = np.array([0.0, 0.0])
+        else:
+            new_position = artists[idx-1].get_line_endpoint()
+        artist.update(new_position)
+        artist.draw()
+
+    outline_new_point = artists[-1].get_line_endpoint()
+    update_outline(outline, outline_new_point[0], outline_new_point[1])
+
+    circles = [artist.circle_drawing for artist in artists]
+    lines = [artist.line_drawing for artist in artists]
+    artists_and_outline = circles + lines + [outline]
+
+    return artists_and_outline
 
 
 def get_circle_centers(radii, phases_radian):

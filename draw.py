@@ -1,5 +1,7 @@
 import sys
 import utils
+from classes import FreqComponentArtist
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from functools import partial
@@ -28,11 +30,6 @@ def main():
     x_coords_scaled, y_coords_scaled = utils.scale_coordinates(x_coords, y_coords, drawing_half_extent)
     frequencies, magnitudes, phases = utils.get_fourier_components(x_coords_scaled, y_coords_scaled)
 
-    # specify circle rotation speed, radius, and starting phase
-    rotation_speeds = frequencies[1:num_freqs+1] * frequency_scaling
-    circle_radii = magnitudes[1:num_freqs+1]
-    start_phases = phases[1:num_freqs+1]
-
     # setup the figure and axis
     cmap = plt.rcParams['axes.prop_cycle'].by_key()['color']
     fig = plt.figure()
@@ -43,16 +40,26 @@ def main():
     plt.yticks([])
 
     # setup the plot elements we want to animate
-    lines = [ax.plot([], [], linewidth=2)[0] for _ in range(num_freqs_to_draw)]
-    circles = [ax.plot([], [], linewidth=0.5)[0] for _ in range(num_freqs_to_draw)]
+    artists = []
+    for idx in np.arange(num_freqs_to_draw):
+        amplitude = magnitudes[idx+1]
+        starting_phase = phases[idx+1]
+        angular_freq = 2 * np.pi * frequencies[idx+1] * frequency_scaling
+        time_step_per_frame = 1 / num_frames_per_cycle
+        artists.append(FreqComponentArtist(
+            amplitude,
+            starting_phase,
+            angular_freq,
+            time_step_per_frame,
+            ax,
+        ))
+
     outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
-    artists = lines + circles + [outline]
 
     # animation
     anim = animation.FuncAnimation(
         fig,
-        partial(utils.update_artists, lines, circles, outline, rotation_speeds, start_phases, circle_radii, num_frames_per_cycle),
-        init_func=partial(utils.initialize_artists, artists),
+        partial(utils.update_artists, artists, outline),
         frames=num_frames,
         interval=20,
         blit=True,
