@@ -41,7 +41,7 @@ def main():
 
     # setup the plot elements we want to animate
     artists = []
-    for idx in np.arange(num_freqs_to_draw):
+    for idx in np.arange(num_freqs):
         amplitude = magnitudes[idx+1]
         starting_phase = phases[idx+1]
         angular_freq = 2 * np.pi * frequencies[idx+1] * frequency_scaling
@@ -59,7 +59,7 @@ def main():
     # animation
     anim = animation.FuncAnimation(
         fig,
-        partial(utils.update_artists, artists, outline),
+        partial(utils.update_artists, artists, outline, num_freqs_to_draw),
         frames=num_frames,
         interval=20,
         blit=True,

@@ -69,20 +69,21 @@ def initialize_artists(artists):
     return artists
 
 
-def update_artists(artists, outline, frame_num):
+def update_artists(artists, outline, num_freqs_to_draw, frame_num):
     for (idx, artist) in enumerate(artists):
         if idx == 0:
             new_position = np.array([0.0, 0.0])
         else:
-            new_position = artists[idx-1].get_line_endpoint()
+            new_position = artists[idx-1].line_endpoint
         artist.update(new_position)
-        artist.draw()
+        if idx < num_freqs_to_draw:
+            artist.draw()
 
-    outline_new_point = artists[-1].get_line_endpoint()
+    outline_new_point = artists[-1].line_endpoint
     update_outline(outline, outline_new_point[0], outline_new_point[1])
 
-    circles = [artist.circle_drawing for artist in artists]
-    lines = [artist.line_drawing for artist in artists]
+    circles = [artist.circle_drawing for artist in artists[0:num_freqs_to_draw]]
+    lines = [artist.line_drawing for artist in artists[0:num_freqs_to_draw]]
     artists_and_outline = circles + lines + [outline]
 
     return artists_and_outline
