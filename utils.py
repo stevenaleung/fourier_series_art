@@ -63,12 +63,6 @@ def get_fourier_components(x_coordinates, y_coordinates):
     return freqs_sorted, magnitudes_sorted, phases_sorted
 
 
-def initialize_artists(artists):
-    for artist in artists:
-        artist.set_data([], [])
-    return artists
-
-
 def update_artists(artists, outline, frame_num):
     for (idx, artist) in enumerate(artists):
         if idx == 0:
@@ -86,28 +80,6 @@ def update_artists(artists, outline, frame_num):
     artists_and_outline = circles + lines + [outline]
 
     return artists_and_outline
-
-
-def get_circle_centers(radii, phases_radian):
-    x_line_endpoints = np.cos(phases_radian) * radii
-    y_line_endpoints = np.sin(phases_radian) * radii
-    # add the lines end to end to find the circle centers
-    x_centers_circle = np.concatenate(([0], np.cumsum(x_line_endpoints)))
-    y_centers_circle = np.concatenate(([0], np.cumsum(y_line_endpoints)))
-    return x_centers_circle, y_centers_circle
-
-
-def update_lines(lines, x_line_endpoints, y_line_endpoints):
-    for idx, line in enumerate(lines):
-        x_line = x_line_endpoints[idx:idx+2]
-        y_line = y_line_endpoints[idx:idx+2]
-        line.set_data(x_line, y_line)
-
-
-def update_circles(circles, circle_radii, x_centers_circle, y_centers_circle):
-    for idx, circle in enumerate(circles):
-        x_coords, y_coords = get_circle_coordinates(x_centers_circle[idx], y_centers_circle[idx], circle_radii[idx])
-        circle.set_data(x_coords, y_coords)
 
 
 def get_circle_coordinates(x_center, y_center, radius):
