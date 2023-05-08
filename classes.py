@@ -11,8 +11,14 @@ class FreqComponentArtist:
         self.angular_freq = angular_freq
         self.time_step_per_frame = time_step_per_frame
         self.line_endpoint = self._update_line_endpoint()
-        self.circle_drawing = ax.plot([], [], linewidth=0.5)[0]
-        self.line_drawing = ax.plot([], [], linewidth=2, color=self.circle_drawing.get_color())[0]
+        if ax is None:
+            self.is_visible = False
+            self.circle_drawing = None
+            self.line_drawing = None
+        else:
+            self.is_visible = True
+            self.circle_drawing = ax.plot([], [], linewidth=0.5)[0]
+            self.line_drawing = ax.plot([], [], linewidth=2, color=self.circle_drawing.get_color())[0]
 
     def update(self, new_position):
         self._update_position(new_position)
@@ -32,8 +38,9 @@ class FreqComponentArtist:
         self.line_endpoint = np.array([x_endpoint, y_endpoint])
 
     def draw(self):
-        self._draw_circle()
-        self._draw_line()
+        if self.is_visible:
+            self._draw_circle()
+            self._draw_line()
 
     def _draw_circle(self):
         x_center, y_center = self.position

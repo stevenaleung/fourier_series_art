@@ -46,12 +46,16 @@ def main():
         starting_phase = phases[idx+1]
         angular_freq = 2 * np.pi * frequencies[idx+1] * frequency_scaling
         time_step_per_frame = 1 / num_frames_per_cycle
+        if idx < num_freqs_to_draw:
+            target_axes = ax
+        else:
+            target_axes = None
         artists.append(FreqComponentArtist(
             amplitude,
             starting_phase,
             angular_freq,
             time_step_per_frame,
-            ax,
+            target_axes,
         ))
 
     outline = ax.plot([], [], linewidth=2, color=[0,0,0])[0]
@@ -59,7 +63,7 @@ def main():
     # animation
     anim = animation.FuncAnimation(
         fig,
-        partial(utils.update_artists, artists, outline, num_freqs_to_draw),
+        partial(utils.update_artists, artists, outline),
         frames=num_frames,
         interval=20,
         blit=True,
