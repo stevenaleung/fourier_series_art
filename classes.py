@@ -37,3 +37,6 @@ class FreqComponentArtist:
         x_endpoints = np.array([0, self.amplitude*np.cos(self.phase)]) + x_center
         y_endpoints = np.array([0, self.amplitude*np.sin(self.phase)]) + y_center
         self.line_drawing.set_data(x_endpoints, y_endpoints)
+
+    def get_line_endpoint(self):
+        return np.array(self.line_drawing.get_data())[:, 1]
